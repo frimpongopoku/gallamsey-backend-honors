@@ -20,6 +20,7 @@ const createUser = (request, response) => {
 const updateUser = (request, response) => {
   const { body } = request;
   const { id } = body || {};
+
   User.findByIdAndUpdate(id, body, { new: true })
     .then((updatedUser) => {
       apiResponse(response, { data: updatedUser });

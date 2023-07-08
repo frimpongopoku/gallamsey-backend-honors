@@ -6,6 +6,15 @@ const apiResponse = (response, options) => {
     ...(options || {}),
   });
 };
+
+const ERRAND_STATES = {
+  DEFAULT: "default",
+  STARTED: "started",
+  ENGAGING: "engaging",
+  COMPLETE: "complete",
+  FUNDS_TRANSFERRED: "funds_transferred",
+};
 module.exports = {
   apiResponse,
+  ERRAND_STATES,
 };

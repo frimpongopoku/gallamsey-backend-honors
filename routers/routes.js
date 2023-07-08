@@ -6,11 +6,19 @@ const {
   deleteUser,
   getUser,
 } = require("../controllers/user/UserController");
+const {
+  createErrand,
+  updateErrand,
+} = require("../controllers/user/ErrandController");
 const usersRouter = express.Router();
+const errandRouter = express.Router();
 
 usersRouter.get("/:id", getUser);
 usersRouter.post("/create", createUser);
 usersRouter.post("/update", updateUser);
 usersRouter.post("/delete/:id", deleteUser);
 
-module.exports = { usersRouter };
+errandRouter.post("/create", createErrand);
+errandRouter.post("/update", updateErrand);
+
+module.exports = { usersRouter, errandRouter };
