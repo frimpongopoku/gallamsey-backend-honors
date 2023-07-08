@@ -6,7 +6,7 @@ const { usersRouter } = require("./routers/routes");
 const app = express();
 
 // Parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ extended: false }));
 // Parse application/json
 app.use(bodyParser.json());
 

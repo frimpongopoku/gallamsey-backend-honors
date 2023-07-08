@@ -1,26 +1,32 @@
 const { User } = require("../../db/schema/schema");
+const { apiResponse } = require("../../utils");
 
 // controllers/users.js
-const getUser = (request, res) => {
+const getUser = (request, response) => {
   // Logic to retrieve a user
   const { id } = request.params;
-  res.send("Get user" + id);
+  response.send("Get user" + id);
 };
 
-const createUser = (request, res) => {
-  const { name, email } = request.body;
-  const newUser = new User({ email, name });
+const createUser = (request, response) => {
+  const { body } = request;
+  const newUser = new User({ ...(body || {}) });
   newUser
     .save()
-    .then(() => console.log("Content saved successfully!"))
-    .catch((error) => console.log("Something happened" + error.toString()));
-  // Logic to create a new user
-  res.send(newUser);
+    .then(() => apiResponse(response, { data: newUser }))
+    .catch((error) => apiResponse(response, { error: error.toString() }));
 };
 
-const updateUser = (req, res) => {
-  // Logic to update a user
-  res.send("Update user");
+const updateUser = (request, response) => {
+  const { body } = request;
+  const { id } = body || {};
+  User.findByIdAndUpdate(id, body, { new: true })
+    .then((updatedUser) => {
+      apiResponse(response, { data: updatedUser });
+    })
+    .catch((error) => {
+      apiResponse(response, { error: error.toString() });
+    });
 };
 
 const deleteUser = (req, res) => {
