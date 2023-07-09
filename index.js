@@ -2,7 +2,7 @@ const express = require("express");
 const { connectToDatabase } = require("./db/utils");
 const bodyParser = require("body-parser");
 const { URI } = require("./db/values");
-const { usersRouter, errandRouter } = require("./routers/routes");
+const { usersRouter, errandRouter, newsRouter } = require("./routers/routes");
 const app = express();
 
 // Parse application/x-www-form-urlencoded
@@ -16,6 +16,7 @@ app.get("/", (req, res) => {
 
 app.use("/users", usersRouter);
 app.use("/errands", errandRouter);
+app.use("/news", newsRouter);
 
 connectToDatabase(URI);
 const port = 4000;
