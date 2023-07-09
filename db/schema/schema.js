@@ -26,6 +26,18 @@ const errandSchema = new mongoose.Schema({
   images: { type: Object, type: [] },
   runner: { type: Object },
   cost: { type: Number, default: 0 },
+  location: {
+    // will be retrieved from the poster's home location
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
+  },
   reward: { type: Number, required: true },
   status: { type: String, default: ERRAND_STATES.DEFAULT },
   createdAt: {
@@ -37,6 +49,8 @@ const errandSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+errandSchema.index({ location: "2dsphere" });
 
 const User = mongoose.model("User", userSchema);
 const Errand = mongoose.model("Errand", errandSchema);

@@ -13,10 +13,20 @@ const createErrand = (request, response) => {
 
 const updateErrand = (request, response) => {
   const { body } = request;
-  const { id, posterId } = body || {};
-  Errand.findOneAndUpdate({ _id: id, "poster.id": posterId }, body, {
-    new: true,
-  })
+  const { id, posterId, location } = body || {};
+
+  var locObj = {};
+  if (location) {
+    locObj = { location: { type: "Point", coordinates: location } };
+  }
+
+  Errand.findOneAndUpdate(
+    { _id: id, "poster.id": posterId },
+    { ...body, ...locObj },
+    {
+      new: true,
+    }
+  )
     .then((updatedErrand) => {
       apiResponse(response, { data: updatedErrand });
     })
