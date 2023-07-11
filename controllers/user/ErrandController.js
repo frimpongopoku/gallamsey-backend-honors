@@ -77,9 +77,31 @@ const listMyRunningErrands = async (request, response) => {
   }
 };
 
+// Will be for picking, cancelling, and a
+const engageErrand = (request, response) => {
+  const { body } = request;
+  const { user_id, data } = body || {};
+
+  Errand.findOneAndUpdate(
+    { $or: [{ "owner.id": user_id }, { "runner.id": user_id }] },
+    { ...(data || {}) },
+    {
+      new: true,
+    }
+  )
+    .then((updatedErrand) => {
+      // Now before you send errand as s response, send the errand to firebase collection. If errand already exists, let it update the old one
+      apiResponse(response, { data: updatedErrand });
+    })
+    .catch((error) => {
+      apiResponse(response, { error: error.toString() });
+    });
+};
+
 module.exports = {
   createErrand,
   updateErrand,
   listErrandsForUser,
   listMyRunningErrands,
+  engageErrand,
 };

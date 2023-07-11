@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  locations: { type: Object, default: []},
   updatedAt: {
     type: Date,
     default: Date.now,
