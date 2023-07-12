@@ -1,5 +1,6 @@
 const { Errand } = require("../../db/schema/schema");
 const { apiResponse, ERRAND_STATES } = require("../../utils");
+const { firestore } = require("../firebase/config");
 
 const createErrand = (request, response) => {
   const { body } = request;
@@ -80,17 +81,31 @@ const listMyRunningErrands = async (request, response) => {
 // Will be for picking, cancelling, and a
 const engageErrand = (request, response) => {
   const { body } = request;
-  const { user_id, data } = body || {};
+  const { user_id, data, errand_id } = body || {};
 
   Errand.findOneAndUpdate(
-    { $or: [{ "owner.id": user_id }, { "runner.id": user_id }] },
+    {
+      _id: errand_id,
+      $or: [{ "poster.id": user_id }, { "runner.id": user_id }],
+    },
     { ...(data || {}) },
     {
       new: true,
     }
   )
     .then((updatedErrand) => {
+      console.log("Here it is now", updatedErrand.toJSON());
+      const errandObj = updatedErrand.toJSON();
+      errandObj._id = errand_id;
       // Now before you send errand as s response, send the errand to firebase collection. If errand already exists, let it update the old one
+      const errandCollection = firestore.collection("Errands");
+      errandCollection
+        .doc(errand_id)
+        .set(errandObj)
+        .then(() => console.log("Firestore items was saved nicely!!!!"))
+        .catch((error) =>
+          console.log("Firestore could not save: ", error.toString())
+        );
       apiResponse(response, { data: updatedErrand });
     })
     .catch((error) => {
