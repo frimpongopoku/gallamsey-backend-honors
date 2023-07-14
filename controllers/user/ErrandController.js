@@ -36,6 +36,19 @@ const updateErrand = (request, response) => {
     });
 };
 
+const listAllErrands = async (request, response) => {
+  const { user_id } = request.body;
+  try {
+    // errands that people are running for the currently signed in user
+
+    // Errands that are completed
+    const data = await Errand.find().limit(50).sort({ createdAt: -1 });
+
+    apiResponse(response, { data });
+  } catch (e) {
+    apiResponse(response, { error: e.toString() });
+  }
+};
 const listErrandsForUser = async (request, response) => {
   const { user_id } = request.body;
   try {
@@ -94,7 +107,6 @@ const engageErrand = (request, response) => {
     }
   )
     .then((updatedErrand) => {
-      console.log("Here it is now", updatedErrand.toJSON());
       const errandObj = updatedErrand.toJSON();
       errandObj._id = errand_id;
       // Now before you send errand as s response, send the errand to firebase collection. If errand already exists, let it update the old one
@@ -119,4 +131,5 @@ module.exports = {
   listErrandsForUser,
   listMyRunningErrands,
   engageErrand,
+  listAllErrands,
 };

@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  locations: { type: Object, default: []},
+  locations: { type: Object, default: [] },
   updatedAt: {
     type: Date,
     default: Date.now,
@@ -24,7 +24,7 @@ const errandSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
   poster: { type: Object, required: true },
-  images: { type: Object, type: [] },
+  images: { type: Object, default: [] },
   runner: { type: Object },
   cost: { type: Number, default: 0 },
   location: {
