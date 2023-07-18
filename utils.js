@@ -3,6 +3,7 @@ const apiResponse = (response, options) => {
     error: null,
     code: 200,
     data: null,
+    success: !options?.error,
     ...(options || {}),
   });
 };

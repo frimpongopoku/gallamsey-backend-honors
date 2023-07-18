@@ -5,6 +5,7 @@ const {
   updateUser,
   deleteUser,
   getUser,
+  fetchUser,
 } = require("../controllers/user/UserController");
 const {
   createErrand,
@@ -20,6 +21,7 @@ const errandRouter = express.Router();
 const newsRouter = express.Router();
 
 usersRouter.get("/:id", getUser);
+usersRouter.post("/whoami", fetchUser);
 usersRouter.post("/create", createUser);
 usersRouter.post("/update", updateUser);
 usersRouter.post("/delete/:id", deleteUser);

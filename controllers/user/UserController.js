@@ -7,6 +7,21 @@ const getUser = (request, response) => {
   const { id } = request.params;
   response.send("Get user" + id);
 };
+const fetchUser = (request, response) => {
+  const { email } = request.body;
+  console.log("Email came like this", email);
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        console.log("USER WAS NOT FOUND");
+        return apiResponse(response, { error: "create_profile" });
+      }
+      apiResponse(response, { data: user });
+    })
+    .catch((error) => {
+      apiResponse(response, { error: error.toString() });
+    });
+};
 
 const createUser = (request, response) => {
   const { body } = request;
@@ -35,4 +50,4 @@ const deleteUser = (req, res) => {
   res.send("Delete user");
 };
 
-module.exports = { getUser, createUser, updateUser, deleteUser };
+module.exports = { getUser, createUser, updateUser, deleteUser, fetchUser };

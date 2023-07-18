@@ -28,15 +28,12 @@ const errandSchema = new mongoose.Schema({
   runner: { type: Object },
   cost: { type: Number, default: 0 },
   location: {
-    // will be retrieved from the poster's home location
     type: {
       type: String,
       enum: ["Point"],
-      required: true,
     },
     coordinates: {
       type: [Number],
-      required: true,
     },
   },
   reward: { type: Number, required: true },
