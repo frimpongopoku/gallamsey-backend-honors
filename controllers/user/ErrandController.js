@@ -10,15 +10,14 @@ const {
 const { firestore } = require("../firebase/config");
 
 const inflateWithErrands = (request, response) => {
-  // const { body } = request;
-  // const newErrand = new Errand({ ...(body || {}) });
   for (let i = 0; i < 20; i++) {
+    const loc = selectLocation();
     const errand = {
       title: generateSentence(5),
       description: generateParagraph(25),
       cost: 14 * (i + 4),
       reward: 12 * (i + 2),
-      location: { type: "Point", coordinates: selectLocation().coords },
+      location: { type: "Point", coordinates: loc.coords },
       images: ["https://unsplash.it/400/400"],
       poster: { name: getRandomFullName(), id: generateRandomString() },
     };
@@ -80,17 +79,25 @@ const listAllErrands = async (request, response) => {
     }
 
     console.log("LE PRIMARY", primary);
-    const errands = await Errand.find({
-      location: {
-        $nearSphere: {
-          $geometry: {
+    const errands = await Errand.aggregate([
+      {
+        $geoNear: {
+          near: {
             type: "Point",
-            coordinates: primary.coords,
+            coordinates: primary.coords.reverse(), // because mongo uses [long, lat]
           },
-          $maxDistance: 100 * 1000, // Convert km to meters
+          distanceField: "distance", // Field to store the calculated distance
+          spherical: true,
+          key: "location", // Field containing the location data
+          maxDistance: 3 * 1000, // Convert km to meters
         },
       },
-    });
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
 
     return apiResponse(response, { count: errands.length, data: errands });
   } catch (e) {

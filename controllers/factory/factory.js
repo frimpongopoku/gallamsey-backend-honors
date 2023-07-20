@@ -90,15 +90,15 @@ function getRandomItemFromArray(array) {
 
 function selectLocation() {
   const locations = [
-    { coords: [20.102496, 57.562373] }, // ALU
-    { coords: [-20.16346, 57.50553] }, // PORT LOUIS
-    { coords: [-20.097468, 57.558565] }, // SSRN
-    { coords: [-20.099683, 57.576605] }, // MAHOGANY
-    { coords: [-20.021833, 57.578069] }, // LA CROISETTE
-    { coords: [-20.012216, 57.587478] }, // SUPER U
-    { coords: [-20.025658, 57.554009] }, // MON CHOISY RESIDENCE
-    { coords: [-20.316945, 57.529971] }, // CUREPIPE
-    { coords: [-20.293065, 57.367934] }, // FLIC
+    { coords: [20.102496, 57.562373], name: "ALU" }, // ALU
+    { coords: [-20.16346, 57.50553], name : "Port Louis" }, // PORT LOUIS
+    { coords: [-20.097468, 57.558565], name : "SSRN" }, // SSRN
+    { coords: [-20.099683, 57.576605], name : "Mahogany" }, // MAHOGANY
+    { coords: [-20.021833, 57.578069], name : "La Croisette" }, // LA CROISETTE
+    { coords: [-20.012216, 57.587478], name : "Super U" }, // SUPER U
+    // { coords: [-20.025658, 57.554009], name : "Mon Choisy Residence" }, // MON CHOISY RESIDENCE
+    { coords: [-20.316945, 57.529971], name : "Curepipe" }, // CUREPIPE
+    { coords: [-20.293065, 57.367934], name : "Flic" }, // FLIC
   ];
   return getRandomItemFromArray(locations);
 }
