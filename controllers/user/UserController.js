@@ -9,12 +9,14 @@ const getUser = (request, response) => {
 };
 const fetchUser = (request, response) => {
   const { email } = request.body;
-  console.log("Email came like this", email);
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        console.log("USER WAS NOT FOUND");
-        return apiResponse(response, { error: "create_profile" });
+        const createProfile = "create_profile";
+        return apiResponse(response, {
+          data: createProfile,
+          error: createProfile,
+        });
       }
       apiResponse(response, { data: user });
     })

@@ -8,8 +8,10 @@ const userSchema = new mongoose.Schema({
   preferredName: String,
   phone: String,
   whatsapp: String,
-  wallet: { type: Object, default: { balance: 0 } },
+  image: String,
+  wallet: { type: Object, default: { balance: 600 } },
   verification_details: { type: Object, default: {} },
+  preferences: { type: Object, default: {} },
   createdAt: {
     type: Date,
     default: Date.now,

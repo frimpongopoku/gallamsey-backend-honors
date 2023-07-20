@@ -9,6 +9,11 @@ const app = express();
 app.use(bodyParser.json({ extended: false }));
 // Parse application/json
 app.use(bodyParser.json());
+// Log request URL 
+app.use((req, res, next) => {
+  console.log(req.url);
+  next();
+});
 
 app.get("/", (req, res) => {
   res.send("This place na main page ooo!");
