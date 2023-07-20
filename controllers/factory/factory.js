@@ -1,4 +1,24 @@
-// Replace this word bank with your desired words
+const nameBank = [
+  "Felicia",
+  "Cynthia",
+  "Sinatra",
+  "Stallion",
+  "Pongo",
+  "Sewhi",
+  "Mavis",
+  "Michael",
+  "Ted",
+  "Rita",
+  "Irene",
+  "Sandra",
+  "Twum",
+  "Juliana",
+  "Jeff",
+  "Kele",
+  "Boras",
+  "Nickolas",
+  "Sypher",
+];
 const wordBank = [
   "Lorem",
   "ipsum",
@@ -21,9 +41,26 @@ const wordBank = [
   "aliqua",
 ];
 
+function generateRandomString(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let randomString = '';
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    randomString += characters.charAt(randomIndex);
+  }
+
+  return randomString;
+}
 function getRandomWord() {
   const randomIndex = Math.floor(Math.random() * wordBank.length);
   return wordBank[randomIndex];
+}
+
+function getRandomFullName() {
+  const randomIndex = Math.floor(Math.random() * nameBank.length);
+  const second = Math.floor(Math.random() * nameBank.length);
+  return nameBank[randomIndex] + " " + nameBank[second];
 }
 
 function generateSentence(sentenceLength) {
@@ -70,4 +107,6 @@ module.exports = {
   generateParagraph,
   generateSentence,
   selectLocation,
+  getRandomFullName, 
+  generateRandomString
 };

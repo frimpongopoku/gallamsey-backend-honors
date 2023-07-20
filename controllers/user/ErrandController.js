@@ -1,7 +1,33 @@
-const { Errand } = require("../../db/schema/schema");
+const { Errand, User } = require("../../db/schema/schema");
 const { apiResponse, ERRAND_STATES } = require("../../utils");
+const {
+  generateSentence,
+  generateParagraph,
+  selectLocation,
+  getRandomFullName,
+  generateRandomString,
+} = require("../factory/factory");
 const { firestore } = require("../firebase/config");
 
+const inflateWithErrands = (request, response) => {
+  // const { body } = request;
+  // const newErrand = new Errand({ ...(body || {}) });
+  for (let i = 0; i < 20; i++) {
+    const errand = {
+      title: generateSentence(5),
+      description: generateParagraph(25),
+      cost: 14 * (i + 4),
+      reward: 12 * (i + 2),
+      location: { type: "Point", coordinates: selectLocation().coords },
+      images: ["https://unsplash.it/400/400"],
+      poster: { name: getRandomFullName(), id: generateRandomString() },
+    };
+    const newErrand = new Errand(errand);
+    newErrand.save();
+  }
+
+  return apiResponse(response);
+};
 const createErrand = (request, response) => {
   const { body } = request;
   const newErrand = new Errand({ ...(body || {}) });
@@ -41,10 +67,32 @@ const listAllErrands = async (request, response) => {
   try {
     // errands that people are running for the currently signed in user
 
-    // Errands that are completed
-    const data = await Errand.find().limit(50).sort({ createdAt: -1 });
+    const user = await User.findOne({ _id: user_id });
+    const ignoreProximity = !user?.preferences?.closeToMe;
+    const primary = user?.locations?.find((loc) => loc.primary);
+    if (!user || ignoreProximity || !primary) {
+      // Errands that are completed
+      const data = await Errand.find({ status: ERRAND_STATES.DEFAULT })
+        .limit(50)
+        .sort({ createdAt: -1 });
 
-    apiResponse(response, { data });
+      return apiResponse(response, { count: data.length, data });
+    }
+
+    console.log("LE PRIMARY", primary);
+    const errands = await Errand.find({
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: primary.coords,
+          },
+          $maxDistance: 100 * 1000, // Convert km to meters
+        },
+      },
+    });
+
+    return apiResponse(response, { count: errands.length, data: errands });
   } catch (e) {
     apiResponse(response, { error: e.toString() });
   }
@@ -132,4 +180,5 @@ module.exports = {
   listMyRunningErrands,
   engageErrand,
   listAllErrands,
+  inflateWithErrands,
 };
