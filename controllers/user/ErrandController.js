@@ -13,7 +13,7 @@ const inflateWithErrands = (request, response) => {
   for (let i = 0; i < 20; i++) {
     const loc = selectLocation();
     const errand = {
-      title: generateSentence(5),
+      title: generateSentence(5) + " - " + loc.name,
       description: generateParagraph(25),
       cost: 14 * (i + 4),
       reward: 12 * (i + 2),
