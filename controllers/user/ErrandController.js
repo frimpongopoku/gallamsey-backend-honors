@@ -18,8 +18,13 @@ const inflateWithErrands = (request, response) => {
       cost: 14 * (i + 4),
       reward: 12 * (i + 2),
       location: { type: "Point", coordinates: loc.coords },
-      images: ["https://unsplash.it/400/400"],
-      poster: { name: getRandomFullName(), id: generateRandomString() },
+      images: ["https://unsplash.it/400/400?image=" + i],
+      poster: {
+        name: getRandomFullName(),
+        id: generateRandomString(12),
+        image: "https://i.pravatar.cc/150?img=" + i,
+        phone: `+1${i}${i} - 0000000000`,
+      },
     };
     const newErrand = new Errand(errand);
     newErrand.save();
@@ -72,13 +77,12 @@ const listAllErrands = async (request, response) => {
     if (!user || ignoreProximity || !primary) {
       // Errands that are completed
       const data = await Errand.find({ status: ERRAND_STATES.DEFAULT })
-        .limit(50)
+        .limit(10)
         .sort({ createdAt: -1 });
 
       return apiResponse(response, { count: data.length, data });
     }
-
-    console.log("LE PRIMARY", primary);
+    const distance = user?.preferences?.proximityRadius || 10;
     const errands = await Errand.aggregate([
       {
         $geoNear: {
@@ -89,7 +93,7 @@ const listAllErrands = async (request, response) => {
           distanceField: "distance", // Field to store the calculated distance
           spherical: true,
           key: "location", // Field containing the location data
-          maxDistance: 3 * 1000, // Convert km to meters
+          maxDistance: distance * 1000, // Convert km to meters
         },
       },
       {
