@@ -10,8 +10,9 @@ const apiResponse = (response, options) => {
 
 const ERRAND_STATES = {
   DEFAULT: "default",
-  STARTED: "started",
+  // STARTED: "started",
   ENGAGING: "engaging",
+  RETURNING: "returning",
   COMPLETE: "complete",
   FUNDS_TRANSFERRED: "funds_transferred",
 };

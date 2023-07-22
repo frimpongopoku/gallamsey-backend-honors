@@ -15,6 +15,7 @@ const {
   engageErrand,
   listAllErrands,
   inflateWithErrands,
+  pickErrand,
 } = require("../controllers/user/ErrandController");
 const { serveNews } = require("../controllers/user/NewsFeedController");
 const usersRouter = express.Router();
@@ -34,6 +35,7 @@ errandRouter.post("/list", listAllErrands);
 errandRouter.post("/list.mine", listErrandsForUser);
 errandRouter.post("/list.running", listMyRunningErrands);
 errandRouter.post("/engage", engageErrand);
+errandRouter.post("/pick", pickErrand);
 
 newsRouter.get("/feed", serveNews);
 

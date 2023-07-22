@@ -65,6 +65,24 @@ const updateErrand = (request, response) => {
       apiResponse(response, { error: error.toString() });
     });
 };
+const pickErrand = (request, response) => {
+  const { body } = request;
+  const { errand_id, runner } = body || {};
+
+  Errand.findOneAndUpdate(
+    { _id: errand_id },
+    { runner },
+    {
+      new: true,
+    }
+  )
+    .then((updatedErrand) => {
+      apiResponse(response, { data: updatedErrand });
+    })
+    .catch((error) => {
+      apiResponse(response, { error: error.toString() });
+    });
+};
 
 const listAllErrands = async (request, response) => {
   const { user_id } = request.body;
@@ -166,6 +184,8 @@ const engageErrand = (request, response) => {
     }
   )
     .then((updatedErrand) => {
+      if (!updatedErrand)
+        return apiResponse(response, { error: "Could not find errand" });
       const errandObj = updatedErrand.toJSON();
       errandObj._id = errand_id;
       // Now before you send errand as s response, send the errand to firebase collection. If errand already exists, let it update the old one
@@ -192,4 +212,5 @@ module.exports = {
   engageErrand,
   listAllErrands,
   inflateWithErrands,
+  pickErrand,
 };
