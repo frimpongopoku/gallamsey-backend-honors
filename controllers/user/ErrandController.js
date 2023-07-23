@@ -115,6 +115,11 @@ const listAllErrands = async (request, response) => {
         },
       },
       {
+        $match: {
+          runner: null,
+        },
+      },
+      {
         $sort: {
           createdAt: -1,
         },
