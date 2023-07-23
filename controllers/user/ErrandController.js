@@ -34,7 +34,12 @@ const inflateWithErrands = (request, response) => {
 };
 const createErrand = (request, response) => {
   const { body } = request;
-  const newErrand = new Errand({ ...(body || {}) });
+  const { deliveryLocation } = body;
+  var locObj = {};
+  if (deliveryLocation) {
+    locObj = { location: { type: "Point", coordinates: deliveryLocation } };
+  }
+  const newErrand = new Errand({ ...(body || {}), ...locObj });
 
   newErrand
     .save()
@@ -101,12 +106,13 @@ const listAllErrands = async (request, response) => {
       return apiResponse(response, { count: data.length, data });
     }
     const distance = user?.preferences?.proximityRadius || 10;
+    console.log("Lets see primary", primary);
     const errands = await Errand.aggregate([
       {
         $geoNear: {
           near: {
             type: "Point",
-            coordinates: primary.coords.reverse(), // because mongo uses [long, lat]
+            coordinates: primary.coords, // Mongo reads coords as [long, lat]
           },
           distanceField: "distance", // Field to store the calculated distance
           spherical: true,

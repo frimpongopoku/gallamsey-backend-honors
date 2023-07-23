@@ -89,16 +89,19 @@ function getRandomItemFromArray(array) {
 }
 
 function selectLocation() {
+  // Notes to self: 
+  // When google gives coordinates (thats where you copied these coords from), the format is [lat, long] but mongoDB expects coords to be [long,lat]
+  // Note to self: so if you record coords directly from google map, remember to reverse
   const locations = [
-    { coords: [20.102496, 57.562373], name: "ALU" }, // ALU
-    { coords: [-20.16346, 57.50553], name : "Port Louis" }, // PORT LOUIS
-    { coords: [-20.097468, 57.558565], name : "SSRN" }, // SSRN
-    { coords: [-20.099683, 57.576605], name : "Mahogany" }, // MAHOGANY
-    { coords: [-20.021833, 57.578069], name : "La Croisette" }, // LA CROISETTE
-    { coords: [-20.012216, 57.587478], name : "Super U" }, // SUPER U
+    { coords: [-20.102496, 57.562373].reverse(), name: "ALU" }, // ALU
+    { coords: [-20.16346, 57.50553].reverse(), name : "Port Louis" }, // PORT LOUIS
+    { coords: [-20.097468, 57.558565].reverse(), name : "SSRN" }, // SSRN
+    { coords: [-20.099683, 57.576605].reverse(), name : "Mahogany" }, // MAHOGANY
+    { coords: [-20.021833, 57.578069].reverse(), name : "La Croisette" }, // LA CROISETTE
+    { coords: [-20.012216, 57.587478].reverse(), name : "Super U" }, // SUPER U
     // { coords: [-20.025658, 57.554009], name : "Mon Choisy Residence" }, // MON CHOISY RESIDENCE
-    { coords: [-20.316945, 57.529971], name : "Curepipe" }, // CUREPIPE
-    { coords: [-20.293065, 57.367934], name : "Flic" }, // FLIC
+    { coords: [-20.316945, 57.529971].reverse(), name : "Curepipe" }, // CUREPIPE
+    { coords: [-20.293065, 57.367934].reverse(), name : "Flic" }, // FLIC
   ];
   return getRandomItemFromArray(locations);
 }

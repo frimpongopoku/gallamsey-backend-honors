@@ -37,6 +37,6 @@ errandRouter.post("/list.running", listMyRunningErrands);
 errandRouter.post("/engage", engageErrand);
 errandRouter.post("/pick", pickErrand);
 
-newsRouter.get("/feed", serveNews);
+newsRouter.post("/feed", serveNews);
 
 module.exports = { usersRouter, errandRouter, newsRouter };
