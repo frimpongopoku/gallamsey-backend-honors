@@ -10,7 +10,7 @@ const serveNews = async (request, response) => {
     const ignoreProximity = !user?.preferences?.closeToMe;
     const locations = user?.locations;
     let primary = locations?.find((loc) => loc.primary);
-    if (locations.length && !primary) primary = locations[0]; // if user has not set primary location yet, first one is the primary location
+    if (locations?.length && !primary) primary = locations[0]; // if user has not set primary location yet, first one is the primary location
     if (!user || ignoreProximity || !primary) {
       // Errands that are completed
       const data = await Errand.find({ runner: null })
