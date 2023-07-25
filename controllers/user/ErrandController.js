@@ -70,18 +70,38 @@ const updateErrand = (request, response) => {
       apiResponse(response, { error: error.toString() });
     });
 };
+
+const findOneErrand = (request, response) => {
+  const { body } = request;
+  const { errand_id } = body || {};
+  Errand.findOne({ _id: errand_id })
+    .then((errand) => {
+      apiResponse(response, { data: errand });
+    })
+    .catch((error) => {
+      apiResponse(response, { error: error.toString() });
+    });
+};
 const pickErrand = (request, response) => {
   const { body } = request;
-  const { errand_id, runner } = body || {};
+  const { errand_id, runner, cancel, runner_id } = body || {};
+  let content = {};
+  if (cancel)
+    content = {
+      query: { _id: errand_id, "runner.id": runner_id },
+      data: { runner: null, status: ERRAND_STATES.DEFAULT },
+    };
+  else content = { query: { _id: errand_id }, data: { runner } };
 
-  Errand.findOneAndUpdate(
-    { _id: errand_id },
-    { runner },
-    {
-      new: true,
-    }
-  )
+  Errand.findOneAndUpdate(content.query, content.data, {
+    new: true,
+  })
     .then((updatedErrand) => {
+      if (!updatedErrand)
+        return apiResponse(response, { error: "Could not pick errand" });
+      const errandObj = updatedErrand.toJSON();
+      errandObj._id = errand_id;
+      propagateToFirestore(errand_id, errandObj, { collectionName: "Errands" });
       apiResponse(response, { data: updatedErrand });
     })
     .catch((error) => {
@@ -179,6 +199,20 @@ const listMyRunningErrands = async (request, response) => {
   }
 };
 
+const propagateToFirestore = (key, data, options) => {
+  const { collectionName } = options || {};
+  if (!collectionName)
+    return console.log("Cant propagate to firestore cos no collectionName");
+
+  const collection = firestore.collection(collectionName);
+  collection
+    .doc(key)
+    .set(data)
+    .then(() => console.log("Firestore items was saved nicely!!!!"))
+    .catch((error) =>
+      console.log("Firestore could not save: ", error.toString())
+    );
+};
 // Will be for picking, cancelling, and a
 const engageErrand = (request, response) => {
   const { body } = request;
@@ -200,14 +234,15 @@ const engageErrand = (request, response) => {
       const errandObj = updatedErrand.toJSON();
       errandObj._id = errand_id;
       // Now before you send errand as s response, send the errand to firebase collection. If errand already exists, let it update the old one
-      const errandCollection = firestore.collection("Errands");
-      errandCollection
-        .doc(errand_id)
-        .set(errandObj)
-        .then(() => console.log("Firestore items was saved nicely!!!!"))
-        .catch((error) =>
-          console.log("Firestore could not save: ", error.toString())
-        );
+      propagateToFirestore(errand_id, errandObj, { collectionName: "Errands" });
+      // const errandCollection = firestore.collection("Errands");
+      // errandCollection
+      //   .doc(errand_id)
+      //   .set(errandObj)
+      //   .then(() => console.log("Firestore items was saved nicely!!!!"))
+      //   .catch((error) =>
+      //     console.log("Firestore could not save: ", error.toString())
+      //   );
       apiResponse(response, { data: updatedErrand });
     })
     .catch((error) => {
@@ -224,4 +259,5 @@ module.exports = {
   listAllErrands,
   inflateWithErrands,
   pickErrand,
+  findOneErrand,
 };
