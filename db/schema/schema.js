@@ -48,6 +48,8 @@ const errandSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  inReview: { type: Boolean, default: false },
+  completedAt: { type: Date, default: null },
 });
 
 errandSchema.index({ location: "2dsphere" });

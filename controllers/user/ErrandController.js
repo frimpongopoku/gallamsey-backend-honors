@@ -71,6 +71,42 @@ const updateErrand = (request, response) => {
     });
 };
 
+const finishErrand = (request, response) => {
+  const { body } = request;
+  const { errand_id, runner_id, data, poster_id } = body || {};
+
+  // Here, errrand is updated to funds stransferred state. Then we look for the runner and give them the money
+  Errand.findOneAndUpdate({ _id: errand_id, "poster.id": poster_id }, data, {
+    new: true,
+  })
+    .then((errand) => {
+      if (!errand)
+        return apiResponse(response, { error: "Could not finish errand" });
+      const total = errand?.reward + errand?.cost;
+
+      // Look for the runner and transfer the funds
+      User.findOneAndUpdate(
+        { _id: runner_id },
+        { $inc: { "wallet.balance": total } },
+        { new: true }
+      )
+        .then((user) => {})
+
+        .catch((e) => console.log("Could not update runners's amount!", e));
+
+      const obj = errand.toJSON();
+      obj._id = errand_id;
+      console.log("Sending this total", total);
+      propagateToFirestore(errand_id, obj, {
+        collectionName: "Errands",
+      });
+
+      apiResponse(response, { data: errand });
+    })
+    .catch((error) => {
+      apiResponse(response, { error: error.toString() });
+    });
+};
 const findOneErrand = (request, response) => {
   const { body } = request;
   const { errand_id } = body || {};
@@ -204,7 +240,7 @@ const propagateToFirestore = (key, data, options) => {
   if (!collectionName)
     return console.log("Cant propagate to firestore cos no collectionName");
 
-  const collection = firestore.collection(collectionName);
+  const collection = firestore.collection(collectionName || "Errands");
   collection
     .doc(key)
     .set(data)
@@ -260,4 +296,5 @@ module.exports = {
   inflateWithErrands,
   pickErrand,
   findOneErrand,
+  finishErrand,
 };
