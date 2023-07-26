@@ -34,17 +34,28 @@ const inflateWithErrands = (request, response) => {
 };
 const createErrand = (request, response) => {
   const { body } = request;
-  const { deliveryLocation } = body;
+  const { deliveryLocation, poster } = body;
   var locObj = {};
   if (deliveryLocation) {
     locObj = { location: { type: "Point", coordinates: deliveryLocation } };
   }
   const newErrand = new Errand({ ...(body || {}), ...locObj });
+  const total = Number(body?.cost) + Number(body.reward);
+  console.log("Adding up teh costs", total);
 
   newErrand
     .save()
     .then(() => apiResponse(response, { data: newErrand }))
     .catch((error) => apiResponse(response, { error: error.toString() }));
+
+  // Then subtract the amount from the users balance
+  User.findOneAndUpdate(
+    { _id: poster.id },
+    { $inc: { "wallet.balance": -1 * total } },
+    { new: true }
+  )
+    .then((user) => {})
+    .catch((e) => console.log("Could not update user", e.toString()));
 };
 
 const updateErrand = (request, response) => {
